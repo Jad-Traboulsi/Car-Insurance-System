@@ -43,10 +43,13 @@ def client_menu():
         choice = input("Choose an option: ")
         if choice == "1":
             ClientManager.add_client()
+            FileLoader.save_all_data()
         elif choice == "2":
             ClientManager.delete_client()
+            FileLoader.save_all_data()
         elif choice == "3":
             ClientManager.edit_client()
+            FileLoader.save_all_data()
         elif choice == "4":
             ClientManager.print_all_clients()
         elif choice == "5":
@@ -70,10 +73,13 @@ def car_menu():
         choice = input("Choose an option: ")
         if choice == "1":
             CarManager.add_car_to_client()
+            FileLoader.save_all_data()
         elif choice == "2":
             CarManager.delete_car_from_client()
+            FileLoader.save_all_data()
         elif choice == "3":
             CarManager.edit_car_data()
+            FileLoader.save_all_data()
         elif choice == "4":
             CarManager.print_client_cars()
         elif choice == "5":
@@ -98,8 +104,10 @@ def claim_menu():
         choice = input("Choose an option: ")
         if choice == "1":
             ClaimRequestManager.add_claim_request()
+            FileLoader.save_all_data()
         elif choice == "2":
             ClaimProcessedManager.process_claim()
+            FileLoader.save_all_data()
         elif choice == "3":
             ClaimRequestManager.print_pending_claims()
         elif choice == "4":

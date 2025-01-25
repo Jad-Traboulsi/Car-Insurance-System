@@ -225,3 +225,127 @@ class FileLoader:
                     print(f"Claim report_number='{report_number}' not found in car '{license_plate}' queue at line {line_number}.")
 
         print(f"Claims processed from '{filepath}'.")
+
+    # ----------------------- SAVE METHODS -----------------------
+
+    @staticmethod
+    def save_all_data():
+        """
+        Re-save all current data (clients, cars, claims) to the text files.
+        Call this after any add/edit/delete operation to keep files in sync.
+        """
+        base_dir = "data"
+        FileLoader.save_clients(os.path.join(base_dir, "clients.txt"))
+        FileLoader.save_cars(os.path.join(base_dir, "cars.txt"))
+        FileLoader.save_claim_requests(os.path.join(base_dir, "claimRequests.txt"))
+        FileLoader.save_claims_processed(os.path.join(base_dir, "claimsProcessed.txt"))
+
+    @staticmethod
+    def save_clients(filepath):
+        """
+        Traverse the BST of clients; for each client, write:
+            name,address,license_number
+        """
+        def gather_clients(client_list, client_obj):
+            # Reconstruct the line as it was in clients.txt
+            name = client_obj.name  # remember we store in lowercase
+            address = client_obj.address
+            license_number = client_obj.license_number
+            # If you prefer to keep the original case for the name, store it separately.
+            client_list.append(f"{name},{address},{license_number}")
+
+        clients_data = []
+        ClientManager.client_bst.in_order_traversal(lambda c: gather_clients(clients_data, c))
+
+        with open(filepath, "w") as file:
+            for line in clients_data:
+                file.write(line + "\n")
+
+    @staticmethod
+    def save_cars(filepath):
+        """
+        For each client, for each car, write:
+            license_plate,license_number,model,year
+        """
+        cars_data = []
+
+        def gather_cars(client_obj):
+            license_number = client_obj.license_number
+            current = client_obj.cars.head
+            while current:
+                car = current.data
+                line = f"{car.license_plate},{license_number},{car.model},{car.year}"
+                cars_data.append(line)
+                current = current.next
+
+        # Traverse all clients
+        ClientManager.client_bst.in_order_traversal(gather_cars)
+
+        with open(filepath, "w") as file:
+            for line in cars_data:
+                file.write(line + "\n")
+
+    @staticmethod
+    def save_claim_requests(filepath):
+        """
+        For each car's claim_requests queue, write each pending claim as:
+            license_number,license_plate,report_number,date,location
+        """
+        requests_data = []
+
+        def gather_requests(client_obj):
+            license_number = client_obj.license_number
+            # iterate each car
+            current = client_obj.cars.head
+            while current:
+                car = current.data
+                if car.claim_requests:  # a Queue
+                    for claim in car.claim_requests.items:
+                        line = (
+                            f"{license_number},"
+                            f"{car.license_plate},"
+                            f"{claim.report_number},"
+                            f"{claim.date},"
+                            f"{claim.location}"
+                        )
+                        requests_data.append(line)
+                current = current.next
+
+        ClientManager.client_bst.in_order_traversal(gather_requests)
+
+        with open(filepath, "w") as file:
+            for line in requests_data:
+                file.write(line + "\n")
+
+    @staticmethod
+    def save_claims_processed(filepath):
+        """
+        For each car's processed_claims stack, write each processed claim as:
+            license_number,license_plate,report_number,date,location
+        """
+        processed_data = []
+
+        def gather_processed(client_obj):
+            license_number = client_obj.license_number
+            current = client_obj.cars.head
+            while current:
+                car = current.data
+                if car.processed_claims:  # a Stack
+                    # The stack is LIFO in memory, but writing order is your choice
+                    # We'll just write from oldest to newest. That's arbitrary.
+                    for claim in car.processed_claims.items:
+                        line = (
+                            f"{license_number},"
+                            f"{car.license_plate},"
+                            f"{claim.report_number},"
+                            f"{claim.date},"
+                            f"{claim.location}"
+                        )
+                        processed_data.append(line)
+                current = current.next
+
+        ClientManager.client_bst.in_order_traversal(gather_processed)
+
+        with open(filepath, "w") as file:
+            for line in processed_data:
+                file.write(line + "\n")

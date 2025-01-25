@@ -116,6 +116,8 @@ No external Python dependencies are required beyond the standard library, so you
      - Print all pending claim requests linked to a car
      - Print all claims processed linked to a car
 
+   Whenever you **add**, **edit**, or **remove** a record (client, car, or claim), the system will automatically update the corresponding `.txt` files to reflect the changes.
+
 4. **Exit** the program by choosing option **4** on the main menu or pressing **Ctrl + C**.
 
 ---

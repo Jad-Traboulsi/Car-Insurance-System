@@ -3,7 +3,6 @@ from utils.linked_list import LinkedList
 
 class Client:
     def __init__(self, name, address, license_number):
-        # We'll store the name in lowercase so the BST is consistently keyed by name
         self.name = name.lower()
         self.address = address
         self.license_number = license_number
@@ -25,18 +24,16 @@ class ClientManager:
         address = input("Enter client address: ")
         license_number = input("Enter client license number: ")
 
-        client = Client(name, address, license_number)
-        cls.client_bst.insert(client.name, client)
+        new_client = Client(name, address, license_number)
+        cls.client_bst.insert(new_client.name, new_client)
+        
         print(f"Client '{name}' added successfully.")
 
     @classmethod
     def delete_client(cls):
-        """
-        Prompt user for a client name to delete from BST.
-        """
         name = input("Enter the client name to delete: ").lower()
         cls.client_bst.delete(name)
-        print(f"Client '{name}' deletion attempted.")
+        print(f"Client '{name}' deleted if it existed.")
 
     @classmethod
     def edit_client(cls):
@@ -64,6 +61,7 @@ class ClientManager:
         def visit_fn(client_obj):
             print(client_obj)
 
+        print("\n--- All Clients ---")
         cls.client_bst.in_order_traversal(visit_fn)
 
     @classmethod

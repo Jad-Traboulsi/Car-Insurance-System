@@ -1,4 +1,3 @@
-from utils.linked_list import LinkedList
 from models.client import ClientManager
 
 class Car:
@@ -6,24 +5,25 @@ class Car:
         self.license_plate = license_plate
         self.model = model
         self.year = year
-        self.claim_requests = None  # Will be a Queue
-        self.processed_claims = None  # Will be a Stack
+        self.claim_requests = None  # a Queue
+        self.processed_claims = None  # a Stack
 
     def __str__(self):
         return f"Car(plate={self.license_plate}, model={self.model}, year={self.year})"
 
 class CarManager:
+
     @classmethod
     def add_car_to_client(cls):
         client_name = input("Enter client name: ")
         client = ClientManager.get_client_by_name(client_name)
         if client:
-            license_plate = input("Enter car license plate: ")
+            plate = input("Enter car license plate: ")
             model = input("Enter car model: ")
             year = input("Enter car year: ")
-            car = Car(license_plate, model, year)
-            client.cars.append(car)  # Use linked list's append method
-            print(f"Car '{license_plate}' added to client '{client_name}'.")
+            car = Car(plate, model, year)
+            client.cars.append(car)
+            print(f"Car '{plate}' added to client '{client_name}'.")
         else:
             print(f"Client '{client_name}' not found.")
 
@@ -32,12 +32,12 @@ class CarManager:
         client_name = input("Enter client name: ")
         client = ClientManager.get_client_by_name(client_name)
         if client:
-            license_plate = input("Enter car license plate to delete: ")
-            removed = client.cars.remove(license_plate, key=lambda c: c.license_plate)
+            plate = input("Enter car license plate to delete: ")
+            removed = client.cars.remove(plate, key=lambda c: c.license_plate)
             if removed:
-                print(f"Car '{license_plate}' removed from client '{client_name}'.")
+                print(f"Car '{plate}' removed from client '{client_name}'.")
             else:
-                print(f"Car '{license_plate}' not found for client '{client_name}'.")
+                print(f"Car '{plate}' not found for client '{client_name}'.")
         else:
             print(f"Client '{client_name}' not found.")
 
@@ -46,32 +46,32 @@ class CarManager:
         client_name = input("Enter client name: ")
         client = ClientManager.get_client_by_name(client_name)
         if client:
-            license_plate = input("Enter car license plate to edit: ")
-            found_car = client.cars.find(license_plate, key=lambda c: c.license_plate)
-            if found_car:
+            plate = input("Enter car license plate to edit: ")
+            car = client.cars.find(plate, key=lambda c: c.license_plate)
+            if car:
                 new_model = input("Enter new model: ")
                 new_year = input("Enter new year: ")
-                found_car.model = new_model
-                found_car.year = new_year
-                print("Car data updated.")
+                car.model = new_model
+                car.year = new_year
+                print(f"Car '{plate}' updated.")
             else:
-                print("Car not found.")
+                print(f"Car '{plate}' not found.")
         else:
-            print("Client not found.")
+            print(f"Client '{client_name}' not found.")
 
     @classmethod
     def print_client_cars(cls):
         client_name = input("Enter client name: ")
         client = ClientManager.get_client_by_name(client_name)
         if client:
-            print(f"\nCars for client '{client_name}':")
             current = client.cars.head
             if not current:
-                print("No cars found.")
-            while current:
-                car = current.data
-                print(car)
-                current = current.next
+                print("No cars found for this client.")
+            else:
+                print(f"\n--- Cars for client '{client_name}' ---")
+                while current:
+                    print(current.data)
+                    current = current.next
         else:
             print(f"Client '{client_name}' not found.")
 
@@ -88,4 +88,5 @@ class CarManager:
                 print(f"{current.data} (Owner: {client.name})")
                 current = current.next
 
+        print("\n--- All Cars in the Company ---")
         ClientManager.client_bst.in_order_traversal(visit_fn)
